@@ -4,7 +4,7 @@ const cors = require("cors");
 require('dotenv').config()
 const app = express();
 
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
@@ -31,10 +31,43 @@ async function run() {
     await client.connect();
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
+
+    const userCollection = client.db("PackFlow-Parcel-Management").collection("users");
+
+
+     // post
+     app.post('/users', async (req, res) => {
+        const user = req.body
+        // email chack ai email ta ase ki na
+        const query = { email: user.email }
+        const existingUser = await userCollection.findOne(query)
+        if (existingUser) {
+          return res.send({ message: 'user already exists', insertedId: null })
+        }
+  
+        // user see post
+        const result = await userCollection.insertOne(user)
+        res.send(result)
+      })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
