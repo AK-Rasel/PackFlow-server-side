@@ -33,22 +33,64 @@ async function run() {
     await client.db("admin").command({ ping: 1 });
 
     const userCollection = client.db("PackFlow-Parcel-Management").collection("users");
+    const deliveryManCollection = client.db("PackFlow-Parcel-Management").collection("deliveryMan");
 
 
-     // post
-     app.post('/users', async (req, res) => {
-        const user = req.body
-        // email chack ai email ta ase ki na
-        const query = { email: user.email }
-        const existingUser = await userCollection.findOne(query)
-        if (existingUser) {
-          return res.send({ message: 'user already exists', insertedId: null })
+    // post
+    app.post('/users', async (req, res) => {
+      const user = req.body
+      // email chack ai email ta ase ki na
+      const query = { email: user.email }
+      const existingUser = await userCollection.findOne(query)
+      if (existingUser) {
+        return res.send({ message: 'user already exists', insertedId: null })
+      }
+
+      // user see post
+      const result = await userCollection.insertOne(user)
+      res.send(result)
+    });
+    // todo non secure
+    app.get('/top-deliveryman', async (req, res) => {
+      const topDeliverymanSort = [
+        {
+          $addFields: {
+            average_ratings: { $avg: "$ratings" }
+          }
+        },
+        {$sort: {
+            parcels_delivered: -1,
+            average_ratings: -1
+          }
+        },
+        {$limit: 5},
+        {
+          $project: {
+            _id: 0,
+            name: 1,
+            image: 1,
+            parcels_delivered: 1,
+            average_ratings: 1
+          }
         }
-  
-        // user see post
-        const result = await userCollection.insertOne(user)
-        res.send(result)
-      })
+      ];
+
+      try {
+        const result = await deliveryManCollection.aggregate(topDeliverymanSort).toArray();
+        const topResult = result.slice(0, 5);
+        res.send(topResult);
+      } catch (err) {
+        console.error(err);
+        res.status(500).send("Error fetching top delivery men");
+      }
+    });
+
+   
+    // todo secure
+    app.get('/deliveryman', async (req, res) => {
+      const result = await deliveryManCollection.find().toArray()
+      res.send(result)
+    })
 
 
 
