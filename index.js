@@ -1,5 +1,5 @@
 const express = require("express");
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors");
 require('dotenv').config()
 const app = express();
@@ -34,6 +34,7 @@ async function run() {
 
     const userCollection = client.db("PackFlow-Parcel-Management").collection("users");
     const deliveryManCollection = client.db("PackFlow-Parcel-Management").collection("deliveryMan");
+    const bookCollection = client.db("PackFlow-Parcel-Management").collection("bookItem");
 
 
     // post
@@ -89,6 +90,25 @@ async function run() {
     // todo secure
     app.get('/deliveryman', async (req, res) => {
       const result = await deliveryManCollection.find().toArray()
+      res.send(result)
+    })
+    
+    // user book
+    app.post('/parcelBook',async(req,res) =>{
+      const bookItem = req.body
+      const result = await bookCollection.insertOne(bookItem)
+      res.send(result)
+    })
+    app.get('/parcelBook',async(req,res) => {
+      // const email = req.query.email
+      // const query ={email: email}
+      const result = await bookCollection.find().toArray()
+      res.send(result)
+    })
+    app.get('/parcelBook/:id',async(req,res) => {
+      const id = req.params.id
+      const query = {_id: new ObjectId(id) }
+      const result = await bookCollection.findOne(query)
       res.send(result)
     })
 
