@@ -47,10 +47,20 @@ async function run() {
         return res.send({ message: 'user already exists', insertedId: null })
       }
 
-      // user see post
+      
       const result = await userCollection.insertOne(user)
       res.send(result)
     });
+
+    // user see post
+    app.get('/users/:email',async(req,res) => {
+      const email = req.params.email
+      console.log(email)
+      const query ={email: email}
+      const result = await userCollection.findOne(query)
+      res.send(result)
+    })
+
     // todo non secure
     app.get('/top-deliveryman', async (req, res) => {
       const topDeliverymanSort = [
@@ -100,9 +110,9 @@ async function run() {
       res.send(result)
     })
     app.get('/parcelBook',async(req,res) => {
-      // const email = req.query.email
-      // const query ={email: email}
-      const result = await bookCollection.find().toArray()
+      const email = req.query.email
+      const query ={email: email}
+      const result = await bookCollection.find(query).toArray()
       res.send(result)
     })
     app.get('/parcelBook/:id',async(req,res) => {
@@ -110,6 +120,33 @@ async function run() {
       const query = {_id: new ObjectId(id) }
       const result = await bookCollection.findOne(query)
       res.send(result)
+    })
+    // update
+    app.put('/parcelBook/:id',async(req,res) => {
+      const id = req.params.id
+     
+      const filter = {_id: new ObjectId(id) }
+      const options = { upsert: true };
+      const upDateProduct = req.body
+      const upDateProductData = {
+        $set: {
+          deliveryAddressLatitude:upDateProduct.deliveryAddressLatitude,
+          email:upDateProduct.email,
+          name:upDateProduct.name,
+          parcelDeliveryAddress:upDateProduct.parcelDeliveryAddress,
+          parcelWeight:upDateProduct.parcelWeight,
+          phoneNumber:upDateProduct.phoneNumber,
+          price:upDateProduct.price,
+          receiverPhoneNumber:upDateProduct.receiverPhoneNumber,
+          receiversName:upDateProduct.receiversName,
+          requestedDeliveryDate:upDateProduct.requestedDeliveryDate,
+          type:upDateProduct.type,
+          yourDeliveryAddressLongitude:upDateProduct.yourDeliveryAddressLongitude
+        }
+      }
+      const result = await bookCollection.updateOne(filter, upDateProductData, options)
+      res.send(result)
+      
     })
 
 
