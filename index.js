@@ -146,6 +146,19 @@ async function run() {
       const result = await bookCollection.find(query).toArray()
       res.send(result)
     })
+    // product booking Cancel
+    app.patch("/parcelBook/cancel/:id",async(req,res) => {
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const updatedDoc = {
+        $set : {
+          status: 'cancel'
+
+        }
+      }
+      const result = await bookCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+    })
     // all booking
     app.get('/allParcelBook',async(req,res) => {
       const result = await bookCollection.find().toArray()
