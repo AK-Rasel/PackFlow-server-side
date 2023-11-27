@@ -2,6 +2,7 @@ const express = require("express");
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require("cors");
 require('dotenv').config()
+const jwt = require('jsonwebtoken')
 const app = express();
 
 const port = process.env.PORT || 5000;
@@ -35,7 +36,54 @@ async function run() {
     const userCollection = client.db("PackFlow-Parcel-Management").collection("users");
     const deliveryManCollection = client.db("PackFlow-Parcel-Management").collection("deliveryMan");
     const bookCollection = client.db("PackFlow-Parcel-Management").collection("bookItem");
-
+// jwt
+app.post('/jwt',async(req,res) => {
+  const user = req.body
+  const token = jwt.sign(user,process.env.SECRET_TOKEN,{
+    expiresIn:'1h'});
+  res.send ({token});
+})
+// token Middlewares 
+const verifyToken = (req,res, next) => {
+  console.log('inside verify token ',req.headers.authorization)
+  if (!req.headers.authorization) {
+    return res.status(403).send({message: 'forbidden access'})
+  }
+  const token = req.headers.authorization.split(' ')[1];
+ jwt.verify(token,process.env.SECRET_TOKEN,(err, decoded)=> {
+  if (err) {
+    return res.status(403).send({message: 'forbidden access'})
+  }
+  req.decoded = decoded;
+  next();
+ })
+}
+app.get('/users/admin/:email',verifyToken,async(req,res) =>{
+  const email = req.params.email;
+  if(email !== req.decoded.email) {
+    return res.status(403).send({message: 'forbidden access'})
+  }
+  const query = {email: email};
+  const user =  await userCollection.findOne(query)
+  let admin = false;
+  if (user) {
+    admin = user?.role === 'admin'
+  }
+  res.send({admin});
+})
+app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
+  const email = req.params.email;
+  if(email !== req.decoded.email) {
+    return res.status(403).send({message: 'forbidden access'})
+  }
+  const query = {email: email};
+  const user =  await userCollection.findOne(query)
+  let deliveryMen = false;
+  if (user) {
+    deliveryMen = user?.role === 'deliveryMen'
+  }
+  res.send({deliveryMen});
+})
 
     // post
     app.post('/users', async (req, res) => {
@@ -86,7 +134,7 @@ async function run() {
     // })
 
     // all user view
-    app.get('/allUsers',async(req,res) => {
+    app.get('/allUsers',verifyToken,async(req,res) => {
      const result = await userCollection.find().toArray()
      res.send(result)
     })
