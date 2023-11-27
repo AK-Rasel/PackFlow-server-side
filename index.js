@@ -50,6 +50,32 @@ async function run() {
       res.send(result)
     });
 
+    // make admin
+    app.patch('/users/admin/:id',async (req,res) => {
+      const id = req.params.id
+      console.log(id)
+      const filter = {_id: new ObjectId(id)}
+      const updatedDoc = {
+        $set : {
+          role : 'admin'
+        }
+      }
+      const result = await userCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+    })
+    // make delivery name 
+    // app.patch('/users/deliveryMan/:id',async (req,res) => {
+    //   const id = req.params.id
+    //   const filter = {_id: new ObjectId(id)}
+    //   const updatedDoc = {
+    //     $set : {
+    //       role : 'deliveryMan'
+    //     }
+    //   }
+    //   const result = await userCollection.updateOne(filter,updatedDoc)
+    //   res.send(result)
+    // })
+
     // user see post
     // app.get('/users/:email',async(req,res) => {
     //   const email = req.params.email
