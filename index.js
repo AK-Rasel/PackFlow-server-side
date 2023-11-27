@@ -58,6 +58,7 @@ const verifyToken = (req,res, next) => {
   next();
  })
 }
+// admin
 app.get('/users/admin/:email',verifyToken,async(req,res) =>{
   const email = req.params.email;
   if(email !== req.decoded.email) {
@@ -71,6 +72,7 @@ app.get('/users/admin/:email',verifyToken,async(req,res) =>{
   }
   res.send({admin});
 })
+// deliveryMen
 app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
   const email = req.params.email;
   if(email !== req.decoded.email) {
@@ -80,10 +82,25 @@ app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
   const user =  await userCollection.findOne(query)
   let deliveryMen = false;
   if (user) {
-    deliveryMen = user?.role === 'deliveryMen'
+    deliveryMen = user?.role === 'deliveryMan'
   }
   res.send({deliveryMen});
 })
+// user
+// app.get('/user/userDashboard:email',verifyToken,async(req,res) =>{
+//   const email = req.params.email;
+//   if(email !== req.decoded.email) {
+//     return res.status(403).send({message: 'forbidden access'})
+//   }
+//   const query = {email: email};
+//   const user =  await userCollection.findOne(query)
+//   let User = false;
+//   if (user) {
+//     deliveryMen = user?.role === 'User'
+//   }
+//   res.send({User});
+// })
+
 
     // post
     app.post('/users', async (req, res) => {
@@ -111,7 +128,7 @@ app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
       const result = await userCollection.updateOne(filter,updatedDoc)
       res.send(result)
     })
-    // make delivery name 
+    // make delivery men 
     app.patch('/users/deliveryMan/:id',async (req,res) => {
       const id = req.params.id
       const filter = {_id: new ObjectId(id)}
@@ -137,6 +154,13 @@ app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
     app.get('/allUsers',verifyToken,async(req,res) => {
      const result = await userCollection.find().toArray()
      res.send(result)
+    })
+// role filter
+    app.get('/allDeliveryMan',async(req,res) => {
+      const filter = { role: 'deliveryMan' }
+     const result = await userCollection.find(filter).toArray()
+     res.send(result)
+    
     })
 
     // todo non secure
@@ -246,21 +270,6 @@ app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
       res.send(result)
       
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
