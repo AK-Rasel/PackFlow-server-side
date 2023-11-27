@@ -87,19 +87,19 @@ app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
   res.send({deliveryMen});
 })
 // user
-// app.get('/user/userDashboard:email',verifyToken,async(req,res) =>{
-//   const email = req.params.email;
-//   if(email !== req.decoded.email) {
-//     return res.status(403).send({message: 'forbidden access'})
-//   }
-//   const query = {email: email};
-//   const user =  await userCollection.findOne(query)
-//   let User = false;
-//   if (user) {
-//     deliveryMen = user?.role === 'User'
-//   }
-//   res.send({User});
-// })
+app.get('/user/userDashboard:email',verifyToken,async(req,res) =>{
+  const email = req.params.email;
+  if(email !== req.decoded.email) {
+    return res.status(403).send({message: 'forbidden access'})
+  }
+  const query = {email: email};
+  const user =  await userCollection.findOne(query)
+  let User = false;
+  if (user) {
+    deliveryMen = user?.role === 'User'
+  }
+  res.send({User});
+})
 
 
     // post
