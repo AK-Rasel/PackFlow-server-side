@@ -46,19 +46,23 @@ async function run() {
       if (existingUser) {
         return res.send({ message: 'user already exists', insertedId: null })
       }
-
-      
       const result = await userCollection.insertOne(user)
       res.send(result)
     });
 
     // user see post
-    app.get('/users/:email',async(req,res) => {
-      const email = req.params.email
-      console.log(email)
-      const query ={email: email}
-      const result = await userCollection.findOne(query)
-      res.send(result)
+    // app.get('/users/:email',async(req,res) => {
+    //   const email = req.params.email
+    //   console.log(email)
+    //   const query ={email: email}
+    //   const result = await userCollection.findOne(query)
+    //   res.send(result)
+    // })
+
+    // all user view
+    app.get('/allUsers',async(req,res) => {
+     const result = await userCollection.find().toArray()
+     res.send(result)
     })
 
     // todo non secure
@@ -109,12 +113,19 @@ async function run() {
       const result = await bookCollection.insertOne(bookItem)
       res.send(result)
     })
+    
     app.get('/parcelBook',async(req,res) => {
       const email = req.query.email
       const query ={email: email}
       const result = await bookCollection.find(query).toArray()
       res.send(result)
     })
+    // all booking
+    // app.get('/allParcelBook',async(req,res) => {
+    //   const result = await bookCollection.find().toArray()
+    //   res.send(result)
+    // })
+    
     app.get('/parcelBook/:id',async(req,res) => {
       const id = req.params.id
       const query = {_id: new ObjectId(id) }
