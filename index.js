@@ -121,10 +121,10 @@ async function run() {
       res.send(result)
     })
     // all booking
-    // app.get('/allParcelBook',async(req,res) => {
-    //   const result = await bookCollection.find().toArray()
-    //   res.send(result)
-    // })
+    app.get('/allParcelBook',async(req,res) => {
+      const result = await bookCollection.find().toArray()
+      res.send(result)
+    })
     
     app.get('/parcelBook/:id',async(req,res) => {
       const id = req.params.id
