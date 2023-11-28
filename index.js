@@ -157,9 +157,12 @@ app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
      const result = await userCollection.find().toArray()
      res.send(result)
     })
+
+
+    
 // role filter
     app.get('/allDeliveryMan',async(req,res) => {
-      const filter = { role: 'deliveryMan' }
+      const filter = { role: 'deliveryMen' }
      const result = await userCollection.find(filter).toArray()
      res.send(result)
     
