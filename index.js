@@ -82,24 +82,26 @@ app.get('/users/deliveryMen/:email',verifyToken,async(req,res) =>{
   const user =  await userCollection.findOne(query)
   let deliveryMen = false;
   if (user) {
-    deliveryMen = user?.role === 'deliveryMan'
+    deliveryMen = user?.role === 'deliveryMen'
   }
   res.send({deliveryMen});
 })
 // user
-app.get('/user/userDashboard:email',verifyToken,async(req,res) =>{
+app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
   const email = req.params.email;
   if(email !== req.decoded.email) {
     return res.status(403).send({message: 'forbidden access'})
   }
   const query = {email: email};
-  const user =  await userCollection.findOne(query)
-  let User = false;
-  if (user) {
-    deliveryMen = user?.role === 'User'
+  const users =  await userCollection.findOne(query)
+  let user = false;
+  if (users) {
+    user = users?.role === 'user'
   }
-  res.send({User});
+  res.send({user});
 })
+
+
 
 
     // post
@@ -129,12 +131,12 @@ app.get('/user/userDashboard:email',verifyToken,async(req,res) =>{
       res.send(result)
     })
     // make delivery men 
-    app.patch('/users/deliveryMan/:id',async (req,res) => {
+    app.patch('/users/deliveryMen/:id',async (req,res) => {
       const id = req.params.id
       const filter = {_id: new ObjectId(id)}
       const updatedDoc = {
         $set : {
-          role : 'deliveryMan'
+          role : 'deliveryMen'
         }
       }
       const result = await userCollection.updateOne(filter,updatedDoc)
@@ -217,7 +219,9 @@ app.get('/user/userDashboard:email',verifyToken,async(req,res) =>{
       const query ={email: email}
       const result = await bookCollection.find(query).toArray()
       res.send(result)
-    })
+    });
+    // chart data
+  
     // product booking Cancel
     app.patch("/parcelBook/cancel/:id",async(req,res) => {
       const id = req.params.id
