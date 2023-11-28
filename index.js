@@ -223,7 +223,14 @@ app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
       const result = await bookCollection.find(query).toArray()
       res.send(result)
     });
-    // chart data
+    // delivery mem deliveryData
+    app.get('/parcelBook/deliveryList',async(req,res) => {
+      const id = req.query.deliveryMenId
+      console.log(id)
+      const query ={deliveryMenId: id}
+      const result = await bookCollection.find(query).toArray()
+      res.send(result)
+    });
   
     // product booking Cancel
     app.patch("/parcelBook/cancel/:id",async(req,res) => {
@@ -238,6 +245,29 @@ app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
       const result = await bookCollection.updateOne(filter,updatedDoc)
       res.send(result)
     })
+
+     // send deliveryMen dashboard
+     app.patch("/parcelBook/sendDeliveryMen/:id",async(req,res) => {
+      const id = req.params.id
+      const assign = req.body
+      console.log(id,assign)
+      const filter = {_id: new ObjectId(id)}
+     
+      const updatedDoc = {
+        $set : {
+          status: assign.status,
+          deliveryMenId : assign.deliveryMenId,
+          deliveryDate :assign.deliveryDate
+
+
+
+        }
+      }
+      const result = await bookCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+    })
+
+
     // all booking
     app.get('/allParcelBook',async(req,res) => {
       const result = await bookCollection.find().toArray()
