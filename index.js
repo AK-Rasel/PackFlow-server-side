@@ -157,6 +157,20 @@ app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
      const result = await userCollection.find().toArray()
      res.send(result)
     })
+    // user profile
+    app.get('/userProfile',async(req,res) => {
+      const email = req.query.email
+      const query = {email: email}
+     const result = await userCollection.findOne(query)
+     res.send(result)
+    })
+
+    // app.get('/parcelBook',async(req,res) => {
+    //   const email = req.query.email
+    //   const query ={email: email}
+    //   const result = await bookCollection.find(query).toArray()
+    //   res.send(result)
+    // });
 
 
     
