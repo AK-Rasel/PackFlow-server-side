@@ -223,11 +223,21 @@ app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
       const result = await bookCollection.find(query).toArray()
       res.send(result)
     });
+    // 
+    
+    // delivery mem view userCollection
+    app.get('/uses/deliveryMenEmail',async(req,res) => {
+      const email = req.query.email
+      console.log(email)
+      const query ={email: email}
+      const result = await userCollection.find(query).toArray()
+      res.send(result)
+    });
     // delivery mem deliveryData
     app.get('/parcelBook/deliveryList',async(req,res) => {
       const id = req.query.deliveryMenId
-      console.log(id)
-      const query ={deliveryMenId: id}
+      // console.log(id)
+      const query ={deliveryMenId : id}
       const result = await bookCollection.find(query).toArray()
       res.send(result)
     });
@@ -239,6 +249,19 @@ app.get('/users/userDashboard/:email',verifyToken,async(req,res) =>{
       const updatedDoc = {
         $set : {
           status: 'cancel'
+
+        }
+      }
+      const result = await bookCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+    })
+    // item Delivered
+    app.patch("/parcelBook/delivered/:id",async(req,res) => {
+      const id = req.params.id
+      const filter = {_id: new ObjectId(id)}
+      const updatedDoc = {
+        $set : {
+          status: 'delivered'
 
         }
       }
